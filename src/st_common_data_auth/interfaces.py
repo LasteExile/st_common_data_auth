@@ -1,15 +1,14 @@
 from typing import Protocol
 
 
-__all__ = ("IToken", "ICacheClient",)
+__all__ = ("IToken", "IAsyncCacheClient",)
 
 
 class IToken(Protocol):
-    @property
-    def token(self) -> str: ...
+    async def get_token(self) -> str: ...
 
 
-class ICacheClient(Protocol):
-    def get(self, key: str) -> bytes: ...
+class IAsyncCacheClient(Protocol):
+    async def aget(self, key: str) -> bytes: ...
 
-    def set(self, key: str, value: bytes) -> None: ...
+    async def aset(self, key: str, value: bytes) -> None: ...

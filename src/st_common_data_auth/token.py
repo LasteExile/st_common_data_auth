@@ -1,8 +1,7 @@
-from st_common_data_auth0.abstract_token import AbstractServiceAuth0Token
+from st_common_data_auth.abstract_token import AbstractServiceAuth0Token
 
 
 __all__ = ("ServiceOAAuth0Token", "ServiceCAPAuth0Token", "ManagementAuth0Token",)
-
 
 
 class ManagementAuth0Token(AbstractServiceAuth0Token):
