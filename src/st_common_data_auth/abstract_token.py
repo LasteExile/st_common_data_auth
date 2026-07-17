@@ -79,7 +79,7 @@ class AbstractServiceAuth0Token(IToken):
         return token
 
     async def _generate_token(self, retry: int = 2) -> TokenType:
-        with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient() as client:
             response = await client.post(
                 url=self.token_url,
                 data={
