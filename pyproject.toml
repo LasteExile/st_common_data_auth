@@ -1,9 +1,21 @@
 [project]
 name = "st-common-data-auth"
-version = "1.0.2.1"
+version = "1.0.3"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "httpx>=0.28.1",
+    "python-jose>=3.5.0",
+    "requests>=2.34.2",
+]
+
+
+[tool.uv]
+package = true
+
+[dependency-groups]
+dev = [
+    "ipython>=9.15.0",
+    "mypy>=2.3.0",
 ]
