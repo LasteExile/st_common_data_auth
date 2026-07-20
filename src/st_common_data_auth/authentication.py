@@ -5,7 +5,6 @@ import requests
 from jose import jwt
 from jose.exceptions import JWTError
 
-from st_common_data_auth.jwks import JWKS
 from st_common_data_auth.exceptions import AuthenticationHeaderError, UnauthorizedError
 
 

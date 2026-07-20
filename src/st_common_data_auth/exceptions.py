@@ -6,19 +6,19 @@ class BadAuth0RequestError(BaseException):
     pass
 
 
-class JWKSError(BaseException):
+class AuthenticationError(BaseException):
     pass
 
 
-class AuthenticationHeaderError(BaseException):
+class AuthenticationHeaderError(AuthenticationError):
     pass
 
 
-class UnauthorizedError(BaseException):
+class UnauthorizedError(AuthenticationError):
     pass
 
 
-class PermissionDeniedError(BaseException):
+class PermissionDeniedError(AuthenticationError):
     pass
 
 
