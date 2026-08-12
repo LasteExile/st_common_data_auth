@@ -1,13 +1,13 @@
-import httpx
 import json
 import datetime
 import logging
 from typing import TypedDict
 
-import requests
+import httpx
 
 from st_common_data_auth.interfaces import IAsyncCacheClient, IToken
 from st_common_data_auth.exceptions import BadAuth0RequestError
+from st_common_data_auth.enums import CachePrefix
 
 
 logger = logging.getLogger(__name__)
@@ -43,7 +43,10 @@ class AbstractServiceAuth0Token(IToken):
         self.cache_client = cache_client
 
     async def get_token(self) -> str:
-        raw_data = await self.cache_client.get(self.token_name)
+        raw_data = await self.cache_client.get(
+            prefix=CachePrefix.AUTH,
+            key=self.token_name,
+        )
 
         if raw_data:
             data = json.loads(raw_data)
@@ -72,8 +75,9 @@ class AbstractServiceAuth0Token(IToken):
         }
 
         await self.cache_client.set(
-            self.token_name,
-            json.dumps(data),
+            prefix=CachePrefix.AUTH,
+            key=self.token_name,
+            data=json.dumps(data),
         )
 
         return token
@@ -99,7 +103,7 @@ class AbstractServiceAuth0Token(IToken):
 
             try:
                 details = response.json()
-            except requests.exceptions.JSONDecodeError:
+            except json.JSONDecodeError:
                 details = response.text
             raise BadAuth0RequestError(
                 f'Unable to get token, status code: {response.status_code}. '
