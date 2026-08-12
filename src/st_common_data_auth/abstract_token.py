@@ -77,7 +77,7 @@ class AbstractServiceAuth0Token(IToken):
         await self.cache_client.set(
             prefix=CachePrefix.AUTH,
             key=self.token_name,
-            data=json.dumps(data),
+            value=json.dumps(data),
         )
 
         return token
