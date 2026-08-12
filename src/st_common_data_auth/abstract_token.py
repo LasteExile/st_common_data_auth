@@ -43,7 +43,7 @@ class AbstractServiceAuth0Token(IToken):
         self.cache_client = cache_client
 
     async def get_token(self) -> str:
-        raw_data = await self.cache_client.aget(self.token_name)
+        raw_data = await self.cache_client.get(self.token_name)
 
         if raw_data:
             data = json.loads(raw_data)
@@ -71,7 +71,7 @@ class AbstractServiceAuth0Token(IToken):
             'expiration_time': expiration.isoformat()
         }
 
-        await self.cache_client.aset(
+        await self.cache_client.set(
             self.token_name,
             json.dumps(data),
         )
