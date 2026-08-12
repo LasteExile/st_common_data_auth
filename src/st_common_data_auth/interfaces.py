@@ -8,7 +8,7 @@ __all__ = ("IToken", "IAsyncCacheClient",)
 class IToken(Protocol):
     async def get_token(self) -> str: ...
 
-class ICache(Protocol):
+class IAsyncCacheClient(Protocol):
     async def set(
         self,
         prefix: CachePrefix,
@@ -22,5 +22,3 @@ class ICache(Protocol):
         prefix: CachePrefix,
         key: str,
     ) -> str | None: ...
-
-    async def close(self) -> None: ...
