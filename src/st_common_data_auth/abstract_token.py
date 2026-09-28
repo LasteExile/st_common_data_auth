@@ -98,7 +98,7 @@ class AbstractServiceAuth0Token(IToken):
         if response.status_code == 200:
             return response.json()
         else:
-            while retry > 0:
+            if retry > 0:
                 return await self._generate_token(retry=retry - 1)
 
             try:
