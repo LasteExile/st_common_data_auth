@@ -1,7 +1,7 @@
 from typing import Union
-from functools import lru_cache
 
-import requests
+import httpx
+from async_lru import alru_cache
 from jose import jwt
 from jose.exceptions import JWTError
 
@@ -9,11 +9,14 @@ from st_common_data_auth.exceptions import AuthenticationHeaderError, Unauthoriz
 
 
 
-@lru_cache
-def get_jwks(auth0_domain: str) -> dict:
-    response  = requests.get(f"https://{auth0_domain}/.well-known/jwks.json")
-    response.raise_for_status()
-    return response.json()
+@alru_cache(maxsize=128)
+async def get_jwks(auth0_domain: str) -> dict:
+    async with httpx.AsyncClient(timeout=5.0) as client:
+        response = await client.get(
+            f"https://{auth0_domain}/.well-known/jwks.json"
+        )
+        response.raise_for_status()
+        return response.json()
 
 
 class Auth0Authentication:
@@ -21,7 +24,7 @@ class Auth0Authentication:
         self.auth0_domain = auth0_domain
         self.audience = audience
 
-    def authenticate_request(
+    async def authenticate_request(
         self,
         invocation_metadata,
     ) -> dict:
@@ -33,9 +36,9 @@ class Auth0Authentication:
         if raw_token is None:
             raise AuthenticationHeaderError('Empty authorization header')
 
-        return self.authenticate(raw_token)
+        return await self.authenticate(raw_token)
 
-    def authenticate(self, raw_token: str) -> dict:
+    async def authenticate(self, raw_token: str) -> dict:
         """
         Validation of token, if token is invalid - exception would be raised
 
@@ -51,7 +54,7 @@ class Auth0Authentication:
         try:
             payload = jwt.decode(
                 raw_token,
-                get_jwks(self.auth0_domain),
+                await get_jwks(self.auth0_domain),
                 algorithms=["RS256"],
                 audience=self.audience,
                 issuer=f'https://{self.auth0_domain}/',
