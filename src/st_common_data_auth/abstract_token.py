@@ -99,7 +99,7 @@ class AbstractServiceAuth0Token(IToken):
             return response.json()
         else:
             while retry > 0:
-                await self._generate_token(retry=retry - 1)
+                return await self._generate_token(retry=retry - 1)
 
             try:
                 details = response.json()
