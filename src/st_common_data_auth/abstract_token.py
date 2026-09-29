@@ -43,10 +43,14 @@ class AbstractServiceAuth0Token(IToken):
         self.cache_client = cache_client
 
     async def get_token(self) -> str:
-        raw_data = await self.cache_client.get(
-            prefix=CachePrefix.AUTH,
-            key=self.token_name,
-        )
+        try:
+            raw_data = await self.cache_client.get(
+                prefix=CachePrefix.AUTH,
+                key=self.token_name,
+            )
+        except Exception as e:
+            logger.exception("Can't get token from cache")
+            raw_data = None
 
         if raw_data:
             data = json.loads(raw_data)
@@ -74,11 +78,14 @@ class AbstractServiceAuth0Token(IToken):
             'expiration_time': expiration.isoformat()
         }
 
-        await self.cache_client.set(
-            prefix=CachePrefix.AUTH,
-            key=self.token_name,
-            value=json.dumps(data),
-        )
+        try:
+            await self.cache_client.set(
+                prefix=CachePrefix.AUTH,
+                key=self.token_name,
+                value=json.dumps(data),
+            )
+        except Exception as e:
+            logger.exception("Can't set token to cache")
 
         return token
 
