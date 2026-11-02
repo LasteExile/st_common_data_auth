@@ -1,5 +1,3 @@
-from typing import Union
-
 import httpx
 from async_lru import alru_cache
 from jose import jwt
@@ -26,17 +24,12 @@ class Auth0Authentication:
 
     async def authenticate_request(
         self,
-        invocation_metadata,
+        header: str | None,
     ) -> dict:
-        header = self.get_header(invocation_metadata)
         if header is None:
             raise AuthenticationHeaderError('No authorization header')
 
-        raw_token = self.get_raw_token(header)
-        if raw_token is None:
-            raise AuthenticationHeaderError('Empty authorization header')
-
-        return await self.authenticate(raw_token)
+        return await self.authenticate(self.get_raw_token(header))
 
     async def authenticate(self, raw_token: str) -> dict:
         """
@@ -68,12 +61,6 @@ class Auth0Authentication:
 
         return payload
 
-    def get_header(self, metadata) -> Union[str, None]:
-        for u in metadata:
-            if u.key.lower() == 'authorization':
-                return u.value
-        return None
-
     def get_raw_token(self, header: str) -> str:
         """
         Extracts an unvalidated JSON web token from the given "Authorization"
@@ -90,5 +77,10 @@ class Auth0Authentication:
         if len(parts) != 2:
             raise AuthenticationHeaderError(
                 'Authorization header must contain two space-delimited values')
+
+        if parts[0].lower() != "bearer":
+            raise AuthenticationHeaderError(
+                "Authorization scheme must be Bearer"
+            )
 
         return parts[1]
